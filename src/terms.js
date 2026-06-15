@@ -1,143 +1,138 @@
 // ---------------------------------------------------------------------------
 // AI-in-business term library
 // ---------------------------------------------------------------------------
-// A prepopulated, searchable collection of the popular phrases and vocabulary
-// people use when discussing how AI affects business. Two jobs:
+// A prepopulated, searchable collection of the SOPHISTICATED vocabulary a CTO,
+// CISO, VP Eng, or B2B buyer actually uses when discussing AI — not the generic
+// "AI strategy" surface terms. Two jobs:
 //
-//   1. Browse / search it      ->  `node index.js terms [query]`
+//   1. Browse / search it      ->  `node index.js terms [query]`  /  web explorer
 //   2. Feed the podcast search ->  terms tagged { keyword: true } become the
 //                                  default Podcast Index search terms.
 //
 // Each entry:
 //   term      the phrase itself
-//   category  grouping (see CATEGORIES below)
+//   category  grouping (see CATEGORIES)
 //   aka       alternate spellings / synonyms (also matched by search)
 //   note      one-line plain-English gloss (optional)
-//   keyword   true => used as a default podcast search keyword
-//
-// Add freely — keep `term` lowercase-ish and human readable.
+//   keyword   true => used as a default ranking keyword (★)
 // ---------------------------------------------------------------------------
 
 export const CATEGORIES = {
-  strategy: 'Strategy & adoption',
-  value: 'Value, ROI & impact',
-  agents: 'Agents & automation',
-  tech: 'Core tech & techniques',
-  workforce: 'Workforce & future of work',
-  governance: 'Risk, ethics & governance',
-  functions: 'By business function',
-  market: 'Market, vendors & investment',
+  strategy: 'Strategy & operating model',
+  economics: 'Economics & unit cost',
+  agents: 'Agents & orchestration',
+  models: 'Models & techniques',
+  infra: 'Infra, inference & LLMOps',
+  governance: 'Security, risk & governance',
+  org: 'Org, talent & adoption',
+  market: 'Market, providers & compute',
 };
 
 export const TERMS = [
-  // --- Strategy & adoption -------------------------------------------------
-  { term: 'AI in business', category: 'strategy', keyword: true, note: 'umbrella phrase for applying AI to commercial work' },
-  { term: 'enterprise AI', category: 'strategy', keyword: true, aka: ['enterprise artificial intelligence'], note: 'AI deployed at company scale' },
-  { term: 'AI strategy', category: 'strategy', keyword: true, note: 'the plan for where/how a company uses AI' },
-  { term: 'AI adoption', category: 'strategy', keyword: true, note: 'rate/process of putting AI into real use' },
-  { term: 'AI transformation', category: 'strategy', keyword: true, aka: ['ai-driven transformation'] },
-  { term: 'digital transformation', category: 'strategy', note: 'broader modernization wave AI now rides' },
-  { term: 'applied AI', category: 'strategy', keyword: true, note: 'AI focused on practical outcomes vs research' },
-  { term: 'AI use case', category: 'strategy', keyword: true, aka: ['ai use cases'] },
-  { term: 'AI roadmap', category: 'strategy', aka: ['ai maturity', 'ai maturity model'] },
-  { term: 'AI-first', category: 'strategy', aka: ['ai first', 'ai-native', 'ai native'], note: 'designing the company/product around AI from the start' },
-  { term: 'AI operating model', category: 'strategy', aka: ['operating model'] },
-  { term: 'build vs buy', category: 'strategy', aka: ['build versus buy'], note: 'make your own model/app vs license a vendor' },
-  { term: 'proof of concept', category: 'strategy', aka: ['poc', 'pilot', 'pilot purgatory'], note: 'small trial before scaling' },
-  { term: 'scaling AI', category: 'strategy', aka: ['ai at scale', 'production AI'] },
+  // --- Strategy & operating model -----------------------------------------
+  { term: 'enterprise AI', category: 'strategy', keyword: true, aka: ['enterprise genai'], note: 'AI deployed at company scale, not a demo' },
+  { term: 'AI strategy', category: 'strategy', keyword: true, note: 'where and how the business deploys AI' },
+  { term: 'AI operating model', category: 'strategy', aka: ['target operating model', 'operating model'] },
+  { term: 'AI center of excellence', category: 'strategy', aka: ['ai coe', 'coe', 'center of excellence'] },
+  { term: 'AI-native architecture', category: 'strategy', aka: ['ai-native', 'ai native', 'greenfield ai'], note: 'systems designed around models from the start' },
+  { term: 'build vs buy', category: 'strategy', aka: ['build versus buy', 'make or buy'], note: 'in-house model/app vs a vendor' },
+  { term: 'platform vs point solution', category: 'strategy', aka: ['point solution', 'ai platform', 'consolidation'] },
+  { term: 'vendor lock-in', category: 'strategy', aka: ['lock-in', 'switching costs', 'model portability'] },
+  { term: 'use-case portfolio', category: 'strategy', aka: ['ai portfolio', 'use case prioritization'] },
+  { term: 'pilot to production', category: 'strategy', aka: ['poc', 'proof of concept', 'pilot purgatory', 'production'], note: 'the gap most AI projects die in' },
+  { term: 'business case', category: 'strategy', aka: ['value realization', 'value case', 'roi case'] },
 
-  // --- Value, ROI & impact -------------------------------------------------
-  { term: 'AI ROI', category: 'value', keyword: true, aka: ['return on investment', 'ai return on investment'] },
-  { term: 'productivity gains', category: 'value', aka: ['productivity', 'productivity boost'] },
-  { term: 'cost reduction', category: 'value', aka: ['cost cutting', 'cost savings', 'ai cost-cutting'] },
-  { term: 'efficiency', category: 'value', aka: ['operational efficiency'] },
-  { term: 'competitive advantage', category: 'value', aka: ['moat', 'ai moat'] },
-  { term: 'disruption', category: 'value', aka: ['disruptive', 'industry disruption'] },
-  { term: 'revenue growth', category: 'value', aka: ['top-line growth', 'new revenue'] },
-  { term: 'total cost of ownership', category: 'value', aka: ['tco'] },
-  { term: 'value creation', category: 'value', aka: ['business value', 'value capture'] },
-  { term: 'time to value', category: 'value', aka: ['ttv'] },
+  // --- Economics & unit cost ----------------------------------------------
+  { term: 'cost per token', category: 'economics', keyword: true, aka: ['tokens', 'token cost', 'token costs', 'price per token', 'token pricing'], note: 'the atomic unit of LLM spend' },
+  { term: 'inference cost', category: 'economics', keyword: true, aka: ['cost of inference', 'inference economics', 'serving cost'] },
+  { term: 'unit economics', category: 'economics', aka: ['cost per query', 'cost per request', 'cost per task'] },
+  { term: 'FinOps for AI', category: 'economics', aka: ['ai finops', 'cost optimization', 'cloud cost', 'ai spend'] },
+  { term: 'total cost of ownership', category: 'economics', aka: ['tco'] },
+  { term: 'AI ROI', category: 'economics', keyword: true, aka: ['return on investment', 'payback period', 'roi'] },
+  { term: 'gross margin impact', category: 'economics', aka: ['gross margin', 'cogs', 'cost of goods sold', 'margin compression'] },
+  { term: 'compute budget', category: 'economics', aka: ['gpu spend', 'capex', 'training budget'] },
+  { term: 'token budget', category: 'economics', aka: ['context budget', 'rate limits', 'quota'] },
 
-  // --- Agents & automation -------------------------------------------------
-  { term: 'AI agents', category: 'agents', keyword: true, aka: ['agent', 'agents'] },
-  { term: 'agentic AI', category: 'agents', keyword: true, aka: ['agentic', 'agentic workflows'] },
-  { term: 'agents in production', category: 'agents', keyword: true, note: 'agents running on real workloads, not demos' },
-  { term: 'AI workflow', category: 'agents', keyword: true, aka: ['ai workflows', 'workflow automation'] },
-  { term: 'intelligent automation', category: 'agents', aka: ['hyperautomation'] },
-  { term: 'robotic process automation', category: 'agents', aka: ['rpa'] },
-  { term: 'automation', category: 'agents', aka: ['process automation', 'task automation'] },
-  { term: 'augmentation', category: 'agents', aka: ['human augmentation', 'augmented work'] },
-  { term: 'copilot', category: 'agents', aka: ['copilots', 'ai copilot', 'assistant', 'ai assistant'] },
-  { term: 'orchestration', category: 'agents', aka: ['agent orchestration', 'multi-agent'] },
-  { term: 'tool use', category: 'agents', aka: ['function calling', 'tool calling'] },
+  // --- Agents & orchestration ---------------------------------------------
+  { term: 'AI agents', category: 'agents', keyword: true, aka: ['agent', 'agents', 'autonomous agents'] },
+  { term: 'agentic AI', category: 'agents', keyword: true, aka: ['agentic', 'agentic workflows', 'agentic systems'] },
+  { term: 'agent orchestration', category: 'agents', keyword: true, aka: ['orchestration', 'multi-agent', 'multi-agent systems'] },
+  { term: 'agents in production', category: 'agents', keyword: true, aka: ['production agents'], note: 'agents on real workloads, not benchmarks' },
+  { term: 'model context protocol', category: 'agents', keyword: true, aka: ['mcp', 'mcp server', 'mcp servers'], note: 'open standard for connecting models to tools/data' },
+  { term: 'tool use', category: 'agents', aka: ['function calling', 'tool calling', 'tools'] },
+  { term: 'human-in-the-loop', category: 'agents', aka: ['hitl', 'human oversight', 'approval workflow'] },
+  { term: 'workflow automation', category: 'agents', aka: ['ai workflow', 'ai workflows', 'process automation'] },
+  { term: 'computer use', category: 'agents', aka: ['browser agents', 'computer-using agents', 'gui agents'] },
+  { term: 'planning and reasoning', category: 'agents', aka: ['reasoning', 'chain of thought', 'task decomposition'] },
 
-  // --- Core tech & techniques ---------------------------------------------
-  { term: 'generative AI', category: 'tech', keyword: true, aka: ['genai', 'gen ai', 'generative artificial intelligence'] },
-  { term: 'large language model', category: 'tech', aka: ['llm', 'llms'] },
-  { term: 'foundation model', category: 'tech', aka: ['frontier model', 'frontier models'] },
-  { term: 'machine learning', category: 'tech', aka: ['ml'] },
-  { term: 'deep learning', category: 'tech', aka: ['neural network', 'neural networks'] },
-  { term: 'retrieval augmented generation', category: 'tech', aka: ['rag'] },
-  { term: 'fine-tuning', category: 'tech', aka: ['fine tuning', 'finetuning'] },
-  { term: 'prompt engineering', category: 'tech', aka: ['prompting', 'prompt'] },
-  { term: 'vector database', category: 'tech', aka: ['vector db', 'embeddings', 'pgvector', 'semantic search'] },
-  { term: 'multimodal', category: 'tech', aka: ['multi-modal', 'vision', 'speech'] },
-  { term: 'MLOps', category: 'tech', aka: ['mlops', 'llmops', 'model deployment', 'inference'] },
-  { term: 'context window', category: 'tech', aka: ['long context', 'context length'] },
-  { term: 'chatbot', category: 'tech', aka: ['conversational ai', 'virtual agent'] },
+  // --- Models & techniques ------------------------------------------------
+  { term: 'generative AI', category: 'models', keyword: true, aka: ['genai', 'gen ai'] },
+  { term: 'large language model', category: 'models', aka: ['llm', 'llms', 'foundation model', 'frontier model'] },
+  { term: 'retrieval augmented generation', category: 'models', keyword: true, aka: ['rag', 'retrieval', 'grounding'] },
+  { term: 'fine-tuning', category: 'models', keyword: true, aka: ['fine tuning', 'sft', 'instruction tuning', 'lora'] },
+  { term: 'RLHF', category: 'models', aka: ['reinforcement learning from human feedback', 'preference tuning', 'rlaif'] },
+  { term: 'model distillation', category: 'models', aka: ['distillation', 'small language model', 'slm', 'small models'] },
+  { term: 'quantization', category: 'models', aka: ['model compression', 'int8', '4-bit'] },
+  { term: 'context window', category: 'models', aka: ['long context', 'context length', 'context engineering'] },
+  { term: 'embeddings', category: 'models', aka: ['vector embeddings', 'semantic search', 'vector database', 'vector db', 'pgvector'] },
+  { term: 'prompt engineering', category: 'models', aka: ['prompting', 'system prompt', 'prompt design'] },
+  { term: 'evals', category: 'models', keyword: true, aka: ['evaluation', 'eval harness', 'benchmarks', 'model evaluation'] },
+  { term: 'reasoning models', category: 'models', aka: ['test-time compute', 'inference-time scaling', 'thinking models'] },
+  { term: 'mixture of experts', category: 'models', aka: ['moe', 'sparse models'] },
+  { term: 'multimodal', category: 'models', aka: ['multi-modal', 'vision', 'speech', 'voice'] },
 
-  // --- Workforce & future of work -----------------------------------------
-  { term: 'future of work', category: 'workforce', aka: ['workplace of the future'] },
-  { term: 'reskilling', category: 'workforce', aka: ['upskilling', 'skills gap'] },
-  { term: 'job displacement', category: 'workforce', aka: ['automation anxiety', 'will ai take my job', 'job loss'] },
-  { term: 'workforce augmentation', category: 'workforce', aka: ['augmented workforce'] },
-  { term: 'human-in-the-loop', category: 'workforce', aka: ['human in the loop', 'hitl', 'human oversight'] },
-  { term: 'AI literacy', category: 'workforce', aka: ['ai fluency', 'ai skills'] },
-  { term: 'talent', category: 'workforce', aka: ['ai talent', 'hiring', 'ai team'] },
-  { term: 'culture change', category: 'workforce', aka: ['change management', 'adoption resistance'] },
+  // --- Infra, inference & LLMOps ------------------------------------------
+  { term: 'LLMOps', category: 'infra', keyword: true, aka: ['mlops', 'llm ops', 'ai ops', 'aiops'] },
+  { term: 'inference', category: 'infra', aka: ['model serving', 'serving', 'inference engine', 'vllm'] },
+  { term: 'GPU capacity', category: 'infra', aka: ['gpus', 'gpu', 'accelerators', 'h100', 'b200'] },
+  { term: 'latency', category: 'infra', aka: ['time to first token', 'ttft', 'tail latency', 'p99'] },
+  { term: 'throughput', category: 'infra', aka: ['tokens per second', 'qps', 'batching'] },
+  { term: 'observability', category: 'infra', keyword: true, aka: ['tracing', 'ai observability', 'monitoring', 'logging'] },
+  { term: 'model routing', category: 'infra', aka: ['routing', 'model gateway', 'fallback', 'cascade'] },
+  { term: 'prompt caching', category: 'infra', aka: ['semantic caching', 'caching', 'kv cache'] },
+  { term: 'model drift', category: 'infra', aka: ['drift', 'performance degradation', 'regression', 'silent regression'] },
+  { term: 'AI gateway', category: 'infra', aka: ['llm gateway', 'llm proxy', 'api gateway'] },
 
-  // --- Risk, ethics & governance ------------------------------------------
-  { term: 'responsible AI', category: 'governance', aka: ['ethical ai', 'ai ethics', 'trustworthy ai'] },
-  { term: 'AI governance', category: 'governance', aka: ['governance', 'ai oversight'] },
-  { term: 'AI safety', category: 'governance', aka: ['safety', 'alignment'] },
-  { term: 'bias', category: 'governance', aka: ['fairness', 'algorithmic bias', 'discrimination'] },
-  { term: 'hallucination', category: 'governance', aka: ['hallucinations', 'confabulation', 'accuracy'] },
-  { term: 'AI regulation', category: 'governance', aka: ['eu ai act', 'ai act', 'compliance', 'regulation'] },
-  { term: 'data privacy', category: 'governance', aka: ['privacy', 'data protection', 'gdpr'] },
-  { term: 'guardrails', category: 'governance', aka: ['controls', 'safeguards'] },
-  { term: 'trust', category: 'governance', aka: ['trust and safety', 'explainability', 'transparency'] },
-  { term: 'data security', category: 'governance', aka: ['security', 'shadow ai'] },
-  { term: 'intellectual property', category: 'governance', aka: ['ip', 'copyright', 'training data rights'] },
+  // --- Security, risk & governance ----------------------------------------
+  { term: 'AI alignment', category: 'governance', keyword: true, aka: ['alignment', 'value alignment'] },
+  { term: 'shadow AI', category: 'governance', keyword: true, aka: ['shadow ai usage', 'unsanctioned ai', 'byo ai', 'rogue ai'], note: 'employees using AI tools outside IT approval' },
+  { term: 'AI governance', category: 'governance', keyword: true, aka: ['governance', 'model governance', 'ai oversight'] },
+  { term: 'prompt injection', category: 'governance', keyword: true, aka: ['injection', 'indirect prompt injection', 'jailbreak', 'jailbreaks'] },
+  { term: 'data exfiltration', category: 'governance', aka: ['data leakage', 'pii leakage', 'sensitive data exposure'] },
+  { term: 'EU AI Act', category: 'governance', keyword: true, aka: ['ai act', 'ai regulation', 'regulation', 'compliance'] },
+  { term: 'red teaming', category: 'governance', aka: ['red team', 'adversarial testing', 'ai security testing'] },
+  { term: 'guardrails', category: 'governance', aka: ['safety filters', 'content moderation', 'controls', 'policy enforcement'] },
+  { term: 'hallucination', category: 'governance', aka: ['hallucinations', 'faithfulness', 'groundedness', 'confabulation'] },
+  { term: 'responsible AI', category: 'governance', aka: ['ethical ai', 'trustworthy ai', 'ai ethics'] },
+  { term: 'AI risk management', category: 'governance', aka: ['ai risk', 'nist ai rmf', 'risk framework'] },
+  { term: 'model provenance', category: 'governance', aka: ['ai bill of materials', 'ai-bom', 'supply chain', 'data lineage'] },
+  { term: 'data residency', category: 'governance', aka: ['data sovereignty', 'sovereignty', 'on-prem', 'private deployment'] },
 
-  // --- By business function ------------------------------------------------
-  { term: 'AI in marketing', category: 'functions', aka: ['marketing ai', 'content generation'] },
-  { term: 'AI in sales', category: 'functions', aka: ['sales ai', 'sales enablement'] },
-  { term: 'AI in finance', category: 'functions', aka: ['finance ai', 'fp&a', 'fintech ai'] },
-  { term: 'AI in HR', category: 'functions', aka: ['hr ai', 'recruiting ai', 'people analytics'] },
-  { term: 'customer service AI', category: 'functions', aka: ['customer support ai', 'cx', 'support automation'] },
-  { term: 'AI in supply chain', category: 'functions', aka: ['supply chain ai', 'logistics', 'operations'] },
-  { term: 'AI in healthcare', category: 'functions', aka: ['healthcare ai', 'clinical ai'] },
-  { term: 'AI in legal', category: 'functions', aka: ['legal ai', 'legaltech'] },
-  { term: 'AI in product', category: 'functions', aka: ['product ai', 'ai features', 'ai product management'] },
-  { term: 'developer productivity', category: 'functions', aka: ['ai coding', 'code generation', 'software engineering ai'] },
+  // --- Org, talent & adoption ---------------------------------------------
+  { term: 'AI adoption', category: 'org', keyword: true, aka: ['adoption curve', 'rollout', 'enablement'] },
+  { term: 'developer productivity', category: 'org', keyword: true, aka: ['developer velocity', 'ai coding', 'code generation', 'copilot'] },
+  { term: 'AI fluency', category: 'org', aka: ['ai literacy', 'upskilling', 'reskilling'] },
+  { term: 'change management', category: 'org', aka: ['organizational change', 'culture change', 'adoption resistance'] },
+  { term: 'future of work', category: 'org', aka: ['workforce', 'job displacement', 'augmentation', 'headcount'] },
+  { term: 'AI talent', category: 'org', aka: ['hiring', 'ml engineers', 'ai team', 'talent war'] },
 
-  // --- Market, vendors & investment ---------------------------------------
-  { term: 'AI investment', category: 'market', aka: ['ai spending', 'capex', 'ai budget'] },
-  { term: 'venture capital', category: 'market', aka: ['vc', 'ai funding', 'ai startups'] },
-  { term: 'AI vendors', category: 'market', aka: ['ai platform', 'ai tooling', 'ai stack'] },
-  { term: 'OpenAI', category: 'market', aka: ['chatgpt', 'gpt'] },
-  { term: 'Anthropic', category: 'market', aka: ['claude'] },
-  { term: 'Google DeepMind', category: 'market', aka: ['gemini', 'deepmind'] },
-  { term: 'enterprise software', category: 'market', aka: ['saas', 'b2b software', 'ai saas'] },
-  { term: 'AI bubble', category: 'market', aka: ['hype cycle', 'hype', 'ai winter'] },
-  { term: 'compute', category: 'market', aka: ['gpu', 'gpus', 'data center', 'chips', 'nvidia'] },
+  // --- Market, providers & compute ----------------------------------------
+  { term: 'foundation model providers', category: 'market', aka: ['model providers', 'openai', 'anthropic', 'claude', 'gpt', 'gemini'] },
+  { term: 'frontier models', category: 'market', aka: ['frontier ai', 'frontier lab', 'state of the art', 'sota'] },
+  { term: 'open-weight models', category: 'market', aka: ['open source ai', 'open models', 'llama', 'mistral', 'open weights', 'deepseek'] },
+  { term: 'model commoditization', category: 'market', aka: ['commoditization', 'price war', 'race to the bottom'] },
+  { term: 'inference providers', category: 'market', aka: ['api providers', 'model api', 'serverless inference', 'together', 'fireworks'] },
+  { term: 'hyperscalers', category: 'market', aka: ['cloud providers', 'aws', 'azure', 'gcp'] },
+  { term: 'compute supply', category: 'market', aka: ['chips', 'nvidia', 'tpus', 'compute constraints', 'gpu shortage'] },
+  { term: 'AI investment', category: 'market', aka: ['ai spending', 'capex', 'funding', 'venture capital', 'vc'] },
+  { term: 'AI bubble', category: 'market', aka: ['hype cycle', 'hype', 'overhang', 'ai winter'] },
 ];
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
-/** Every term tagged as a default podcast search keyword. */
+/** Every term tagged as a default ranking keyword. */
 export function defaultKeywords() {
   return TERMS.filter((t) => t.keyword).map((t) => t.term);
 }
@@ -145,15 +140,13 @@ export function defaultKeywords() {
 /** All searchable strings for an entry, lowercased. */
 function haystack(t) {
   return [t.term, t.category, CATEGORIES[t.category] || '', t.note || '', ...(t.aka || [])]
-    .join('  ')
+    .join('  ')
     .toLowerCase();
 }
 
 /**
- * Search the term library. Multi-word queries are AND-matched (every word must
- * appear somewhere in the entry). Empty query returns everything.
- * Results are ranked: exact term match > term starts-with > term contains >
- * alias/note match.
+ * Search the term library. Multi-word queries are AND-matched. Empty query
+ * returns everything. Ranked: exact term > starts-with > contains > alias/note.
  */
 export function searchTerms(query = '') {
   const q = query.trim().toLowerCase();
@@ -161,19 +154,16 @@ export function searchTerms(query = '') {
 
   const words = q.split(/\s+/).filter(Boolean);
   const scored = [];
-
   for (const t of TERMS) {
     const hay = haystack(t);
     if (!words.every((w) => hay.includes(w))) continue;
-
     const term = t.term.toLowerCase();
-    let score = 1; // alias/note match
+    let score = 1;
     if (term.includes(q)) score = 2;
     if (term.startsWith(q)) score = 3;
     if (term === q) score = 4;
     scored.push({ t, score });
   }
-
   return scored
     .sort((a, b) => b.score - a.score || a.t.term.localeCompare(b.t.term))
     .map((s) => s.t);
@@ -187,6 +177,5 @@ export function groupByCategory(terms) {
     if (!groups.has(t.category)) groups.set(t.category, []);
     groups.get(t.category).push(t);
   }
-  // drop empty groups
   return [...groups.entries()].filter(([, list]) => list.length > 0);
 }

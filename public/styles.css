@@ -189,6 +189,25 @@ em { font-style: normal; color: var(--accent-ink); font-weight: 600; }
 
 .empty { color: var(--ink-soft); text-align: center; padding: 2rem; }
 
+/* ---------- methodology ---------- */
+.method-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.2rem; }
+.method-card { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 1.6rem; box-shadow: var(--shadow-sm); }
+.method-num {
+  width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center;
+  font-family: 'Fraunces', serif; font-size: 1.3rem; font-weight: 600; color: #fff;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2)); margin-bottom: 1rem;
+}
+.method-card h3 { font-size: 1.15rem; margin: 0 0 .6rem; display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; }
+.method-card .tag { font-size: .68rem; text-transform: uppercase; letter-spacing: .08em; font-weight: 700; color: var(--accent-ink); background: #efeefe; padding: .2rem .5rem; border-radius: 999px; }
+.method-card p { color: var(--ink-soft); margin: 0 0 .8rem; font-size: .95rem; }
+.method-formula { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .82rem; color: var(--ink); background: #f6f6fb; border: 1px solid var(--line); border-radius: 10px; padding: .7rem .9rem; }
+.method-src { font-size: .85rem; }
+.method-src a { color: var(--accent-ink); font-weight: 600; }
+.method-note { margin-top: 1.6rem; background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 1.6rem; box-shadow: var(--shadow-sm); }
+.method-note h4 { margin: 0 0 .8rem; font-size: 1rem; }
+.method-note ul { margin: 0; padding-left: 1.2rem; color: var(--ink-soft); }
+.method-note li { margin-bottom: .5rem; font-size: .92rem; }
+
 /* ---------- footer ---------- */
 .footer { text-align: center; padding: 3rem 1.5rem; color: var(--ink-soft); font-size: .9rem; }
 .footer a { color: var(--accent-ink); }

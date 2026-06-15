@@ -16,9 +16,9 @@
     <nav class="nav">
       <div class="brand"><span class="brand-mark">🎙️</span> Podcast<span class="brand-accent">Ranker</span></div>
       <div class="nav-links">
-        <a href="#explore">Explore terms</a>
         <a href="#leaderboard">Leaderboard</a>
-        <a href="https://github.com/edmfg/podcastranker" target="_blank" rel="noopener">GitHub</a>
+        <a href="#explore">Refine by topic</a>
+        <a href="#methodology">Methodology</a>
       </div>
     </nav>
 
@@ -31,8 +31,8 @@
         exploring the vocabulary people use, then build a leaderboard from it.
       </p>
       <div class="hero-cta">
-        <a class="btn btn-primary" href="#explore">Explore the term library</a>
-        <a class="btn btn-ghost" href="#leaderboard">Jump to leaderboard</a>
+        <a class="btn btn-primary" href="#leaderboard">See the leaderboard</a>
+        <a class="btn btn-ghost" href="#explore">Refine by topic</a>
       </div>
       <div class="hero-stats">
         <div><b id="stat-terms">—</b><span>AI-in-business terms</span></div>
@@ -43,63 +43,25 @@
   </header>
 
   <main>
-    <!-- ============================ EXPLORE ============================ -->
-    <section id="explore" class="section">
-      <div class="section-head">
-        <h2>Explore AI-in-business terms</h2>
-        <p>Search the popular phrases and vocabulary used when discussing how AI
-           affects business. Tap terms to add them to your search, then build a
-           leaderboard from exactly the topics you care about.</p>
-      </div>
-
-      <div class="search-bar">
-        <svg class="search-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-        <input id="term-search" type="search" placeholder="Search terms — e.g. agents, ROI, governance, marketing…" autocomplete="off" />
-        <button id="clear-search" class="clear-btn" title="Clear" hidden>×</button>
-      </div>
-
-      <div id="category-filters" class="chips"></div>
-
-      <div class="tray" id="tray" hidden>
-        <div class="tray-label">Selected (<span id="tray-count">0</span>):</div>
-        <div id="tray-items" class="tray-items"></div>
-        <button id="run-selected" class="btn btn-primary btn-sm">Find podcasts with these terms →</button>
-        <button id="clear-tray" class="btn btn-ghost btn-sm">Clear</button>
-      </div>
-
-      <div id="term-results" class="term-groups"></div>
-      <p id="term-empty" class="empty" hidden>No terms match. Try a broader word.</p>
-    </section>
-
     <!-- =========================== LEADERBOARD ========================= -->
-    <section id="leaderboard" class="section section-alt">
+    <section id="leaderboard" class="section">
       <div class="section-head">
-        <h2>Podcast leaderboard</h2>
-        <p>Live-ranked from Podcast Index (topic frequency) × a popularity proxy
-           (audience). Run it on the default AI-in-business keywords, or use the
-           terms you selected above.</p>
+        <h2 id="board-title">Top podcasts right now</h2>
+        <p id="board-sub">The most popular shows overall. Select AI topics below to
+           re-rank the board by how much each show actually discusses them —
+           combining <em>topic relevance</em> with <em>audience size</em>.</p>
       </div>
 
       <div class="board-controls">
-        <button id="run-default" class="btn btn-primary">Rank default AI-in-business keywords</button>
         <span id="board-context" class="board-context"></span>
+        <button id="show-overall" class="btn btn-ghost btn-sm" hidden>← Back to overall top</button>
       </div>
 
       <div id="board-status" class="board-status" hidden></div>
 
       <div class="table-wrap" id="table-wrap" hidden>
         <table class="board">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Show</th>
-              <th class="num" data-sort="frequency_score">Freq ▾</th>
-              <th class="num" data-sort="matching_eps">Eps</th>
-              <th>Last match</th>
-              <th class="num" data-sort="audience_score" id="aud-col">Audience</th>
-              <th class="num" data-sort="blended">Blended</th>
-            </tr>
-          </thead>
+          <thead id="board-head"></thead>
           <tbody id="board-body"></tbody>
         </table>
       </div>
@@ -108,7 +70,85 @@
         ⚠️ <b>Honest limit:</b> true download counts are private — no free API exposes them.
         The audience column is a <em>modeled popularity proxy</em> (0–100), not a listener count.
         Shows below the proxy's visibility threshold are flagged, not scored.
+        See <a href="#methodology">methodology</a> for exactly how the ranking works.
       </p>
+    </section>
+
+    <!-- ============================ EXPLORE ============================ -->
+    <section id="explore" class="section section-alt">
+      <div class="section-head">
+        <h2>Refine by topic</h2>
+        <p>Search the sophisticated vocabulary a CTO, CISO, or B2B buyer uses when
+           discussing AI. Select topics to re-rank the leaderboard above by how
+           much each show covers them.</p>
+      </div>
+
+      <div class="search-bar">
+        <svg class="search-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        <input id="term-search" type="search" placeholder="Search topics — e.g. shadow AI, RAG, inference cost, alignment…" autocomplete="off" />
+        <button id="clear-search" class="clear-btn" title="Clear" hidden>×</button>
+      </div>
+
+      <div id="category-filters" class="chips"></div>
+
+      <div class="tray" id="tray" hidden>
+        <div class="tray-label">Ranking by (<span id="tray-count">0</span>):</div>
+        <div id="tray-items" class="tray-items"></div>
+        <button id="run-selected" class="btn btn-primary btn-sm">Re-rank leaderboard →</button>
+        <button id="clear-tray" class="btn btn-ghost btn-sm">Clear</button>
+      </div>
+
+      <div id="term-results" class="term-groups"></div>
+      <p id="term-empty" class="empty" hidden>No topics match. Try a broader word.</p>
+    </section>
+
+    <!-- =========================== METHODOLOGY ========================= -->
+    <section id="methodology" class="section">
+      <div class="section-head">
+        <h2>Methodology</h2>
+        <p>"Top" is two different questions, so the ranking keeps them as two
+           separate dimensions — and shows a blend so you can weigh the tradeoff.</p>
+      </div>
+
+      <div class="method-grid">
+        <div class="method-card">
+          <div class="method-num">1</div>
+          <h3>Topic relevance <span class="tag">frequency</span></h3>
+          <p>How <em>much</em> a show actually talks about the AI topics you select.
+             We pull each candidate show's episode list and count how many episodes
+             mention your selected phrases in the title or description.</p>
+          <p class="method-formula">relevance = matching&nbsp;episodes + 0.5 × recent&nbsp;(90d) + density&nbsp;weight × (matching ÷ total)</p>
+          <p class="method-src">Source: <a href="https://podcastindex.org" target="_blank" rel="noopener">Podcast Index API</a> — an open podcast database (episode metadata). Requires a free API key.</p>
+        </div>
+
+        <div class="method-card">
+          <div class="method-num">2</div>
+          <h3>Audience size <span class="tag">popularity</span></h3>
+          <p>How <em>big</em> a show is. The default board uses each show's position
+             in Apple's current Top Podcasts chart (0–100, keyless). Optionally,
+             Listen Notes' Listen Score can be used instead.</p>
+          <p class="method-formula">audience = Apple&nbsp;chart&nbsp;rank → 0–100 &nbsp;(or Listen&nbsp;Score, if configured)</p>
+          <p class="method-src">Sources: <a href="https://podcasts.apple.com" target="_blank" rel="noopener">Apple Top Podcasts</a> chart (default, no key) · <a href="https://www.listennotes.com" target="_blank" rel="noopener">Listen Notes</a> Listen Score (optional).</p>
+        </div>
+
+        <div class="method-card">
+          <div class="method-num">∑</div>
+          <h3>Blended rank <span class="tag">combined</span></h3>
+          <p>A single weighted score, leaning toward relevance, so you can sort by
+             one number while still seeing both dimensions in the table.</p>
+          <p class="method-formula">blended = 0.6 × normalized&nbsp;relevance + 0.4 × (audience ÷ 100)</p>
+          <p class="method-src">Default sort: relevance when topics are selected; popularity for the overall board.</p>
+        </div>
+      </div>
+
+      <div class="method-note">
+        <h4>Honest limits</h4>
+        <ul>
+          <li><b>No real download numbers.</b> True listener/download counts are private; no free API exposes them. The audience column is a <em>modeled popularity proxy</em>, not a download count.</li>
+          <li><b>Apple's chart is the overall top chart</b>, so it favors large general shows. A niche-but-on-topic show may rank high on relevance yet show "not in Apple Top chart" for audience — that's expected.</li>
+          <li><b>Metadata, not transcripts.</b> Relevance is measured from episode titles &amp; descriptions, so a show that discusses a topic without naming it may be undercounted.</li>
+        </ul>
+      </div>
     </section>
   </main>
 
