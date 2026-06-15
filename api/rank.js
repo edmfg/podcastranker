@@ -18,6 +18,27 @@ const MAX_FEEDS = 28;
 const EPISODE_BATCH = 6;
 
 export default async function handler(req, res) {
+  const dbgUrl = new URL(req.url, 'http://localhost');
+
+  // Privacy-safe credential diagnostic: ?debug=keys reports the SHAPE of the
+  // env vars (never the secret value) so we can spot quotes/whitespace/typos.
+  if (dbgUrl.searchParams.get('debug') === 'keys') {
+    const k = process.env.PI_KEY || '';
+    const s = process.env.PI_SECRET || '';
+    return res.status(200).json({
+      diag: {
+        piKeyLen: k.length,
+        piKeyFirst4: k.slice(0, 4),
+        piKeyLast4: k.slice(-4),
+        piKeyHasWhitespace: k !== k.trim(),
+        piSecretLen: s.length,
+        piSecretHasSurroundingQuotes: /^\s*["'].*["']\s*$/.test(s),
+        piSecretHasWhitespace: s !== s.trim() || /\s/.test(s),
+        listenKeySet: !!process.env.LISTEN_API_KEY,
+      },
+    });
+  }
+
   if (!process.env.PI_KEY || !process.env.PI_SECRET) {
     return res.status(500).json({ error: 'Server is missing Podcast Index credentials' });
   }
