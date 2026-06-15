@@ -31,6 +31,7 @@ async function loadGenre(id) {
     name: e?.['im:name']?.label || '',
     artist: e?.['im:artist']?.label || '',
     id: Number(e?.id?.attributes?.['im:id']) || null,
+    url: (e?.id?.label || '').replace(/\?uo=\d+$/, ''),
   }));
 }
 
@@ -44,7 +45,7 @@ export async function loadAppleChart() {
       if (!key) continue;
       const existing = map.get(key);
       if (!existing || e.rank < existing.rank) {
-        map.set(key, { rank: e.rank, id: e.id, name: e.name, artist: e.artist, genre: GENRES[gi].name });
+        map.set(key, { rank: e.rank, id: e.id, name: e.name, artist: e.artist, url: e.url, genre: GENRES[gi].name });
       }
     }
   });

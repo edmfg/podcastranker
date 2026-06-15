@@ -30,6 +30,13 @@ export function loadEnv() {
 
 export const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
+/** Best public link for a Podcast Index feed: Apple page › website › RSS. */
+export function showLink(feed = {}) {
+  if (feed.itunesId) return `https://podcasts.apple.com/podcast/id${feed.itunesId}`;
+  if (feed.link) return feed.link;
+  return feed.url || null;
+}
+
 /**
  * fetch with retry + exponential backoff. Retries on network errors, 429, and
  * 5xx. Honors Retry-After when present. Throws after `retries` attempts.

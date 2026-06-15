@@ -14,7 +14,7 @@
 //   --no-apple           skip the fragile Apple ratings fallback
 // ---------------------------------------------------------------------------
 import { writeFileSync } from 'node:fs';
-import { loadEnv, sleep } from './src/util.js';
+import { loadEnv, sleep, showLink } from './src/util.js';
 import { KEYWORDS, LIMITS, WEIGHTS } from './src/config.js';
 import { searchTerms, groupByCategory, CATEGORIES, TERMS } from './src/terms.js';
 import { searchFeeds, getEpisodes } from './src/podcastIndex.js';
@@ -153,6 +153,7 @@ async function cmdRank(args) {
     rows.push({
       show: s.feed.title,
       author: s.feed.author,
+      link: showLink(s.feed),
       frequency_score: s.frequency_score,
       matching_eps: s.matching_eps,
       total_eps: s.total_eps,

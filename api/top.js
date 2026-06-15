@@ -21,6 +21,7 @@ export default async function handler(req, res) {
         show: e.name,
         author: e.artist,
         genre: e.genre,
+        link: e.url || null,
         audience_rank: e.rank,
         audience_score: Math.round(100 * (1 - (e.rank - 1) / Math.max(1, chart.size))),
         audience_available: true,

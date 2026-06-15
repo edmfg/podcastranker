@@ -8,6 +8,7 @@ import { searchFeeds, getEpisodes } from '../src/podcastIndex.js';
 import { selectAudienceProvider } from '../src/audience.js';
 import { frequencyScore, audienceScore, attachBlended } from '../src/score.js';
 import { defaultKeywords } from '../src/terms.js';
+import { showLink } from '../src/util.js';
 
 export const config = { maxDuration: 60 };
 
@@ -77,6 +78,7 @@ export default async function handler(req, res) {
       rows.push({
         show: s.feed.title,
         author: s.feed.author,
+        link: showLink(s.feed),
         frequency_score: s.frequency_score,
         matching_eps: s.matching_eps,
         last_match_date: s.last_match_date,

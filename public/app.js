@@ -163,7 +163,11 @@ function renderBoard() {
 }
 
 function showCell(r) {
-  return `${escapeHtml(r.show)}${r.author ? `<small>${escapeHtml(r.author)}</small>` : ''}`;
+  const name = escapeHtml(r.show);
+  const linked = r.link
+    ? `<a class="show-link" href="${escapeAttr(r.link)}" target="_blank" rel="noopener">${name} <span class="ext">↗</span></a>`
+    : name;
+  return `${linked}${r.author ? `<small>${escapeHtml(r.author)}</small>` : ''}`;
 }
 function audienceCell(r) {
   return r.audience_available

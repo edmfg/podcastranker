@@ -35,6 +35,9 @@ export async function searchFeeds(term) {
     id: f.id,
     title: f.title,
     author: f.author || f.ownerName || '',
+    link: f.link || '', // show website
+    url: f.url || '', // rss feed
+    itunesId: f.itunesId || null,
   }));
 }
 

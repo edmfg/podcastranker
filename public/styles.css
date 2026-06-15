@@ -182,6 +182,10 @@ em { font-style: normal; color: var(--accent-ink); font-weight: 600; }
 .board .rank-cell { color: #b9bad0; font-variant-numeric: tabular-nums; }
 .board .show-cell { font-weight: 600; }
 .board .show-cell small { display: block; color: var(--ink-soft); font-weight: 400; font-size: .8rem; }
+.show-link { color: var(--ink); text-decoration: none; }
+.show-link:hover { color: var(--accent-ink); text-decoration: underline; }
+.show-link .ext { color: var(--ink-soft); font-size: .8em; opacity: .6; }
+.show-link:hover .ext { color: var(--accent-ink); opacity: 1; }
 .below { color: var(--amber); font-size: .82rem; }
 
 .disclaimer { margin-top: 1.4rem; color: var(--amber); background: var(--amber-bg); border: 1px solid #fed7aa; border-radius: 12px; padding: .9rem 1.1rem; font-size: .88rem; }
