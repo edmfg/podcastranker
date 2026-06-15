@@ -188,6 +188,14 @@ em { font-style: normal; color: var(--accent-ink); font-weight: 600; }
 .show-link:hover .ext { color: var(--accent-ink); opacity: 1; }
 .below { color: var(--amber); font-size: .82rem; }
 
+/* host / DAI badges (neutral class names — avoid ad-blocker cosmetic filters) */
+.hostcol { max-width: 220px; }
+.host-badge { display: inline-block; background: #eef2ff; color: #3730a3; border: 1px solid #e0e7ff; padding: .15rem .5rem; border-radius: 999px; font-size: .76rem; font-weight: 600; white-space: nowrap; }
+.host-prefix { display: inline-block; background: #f6f6fb; color: var(--ink-soft); border: 1px solid var(--line); padding: .12rem .45rem; border-radius: 999px; font-size: .68rem; margin-left: .25rem; white-space: nowrap; }
+.host-unknown { color: #b9bad0; }
+.host-loading { color: #b9bad0; animation: pulse 1.2s ease-in-out infinite; }
+@keyframes pulse { 0%,100% { opacity: .4 } 50% { opacity: 1 } }
+
 .disclaimer { margin-top: 1.4rem; color: var(--amber); background: var(--amber-bg); border: 1px solid #fed7aa; border-radius: 12px; padding: .9rem 1.1rem; font-size: .88rem; }
 .disclaimer b { color: #92400e; }
 

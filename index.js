@@ -20,6 +20,7 @@ import { searchTerms, groupByCategory, CATEGORIES, TERMS } from './src/terms.js'
 import { searchFeeds, getEpisodes } from './src/podcastIndex.js';
 import { selectAudienceProvider } from './src/audience.js';
 import { frequencyScore, audienceScore, attachBlended } from './src/score.js';
+import { detectFromUrls } from './src/hosting.js';
 
 // ---- tiny arg parser -------------------------------------------------------
 function parseArgs(argv) {
@@ -127,7 +128,10 @@ async function cmdRank(args) {
     try {
       const eps = await getEpisodes(f.id);
       const stats = frequencyScore(eps, keywords);
-      if (stats.matching_eps > 0) scored.push({ feed: f, ...stats });
+      if (stats.matching_eps > 0) {
+        const enclosures = eps.map((e) => e.enclosureUrl).filter(Boolean).slice(0, 3);
+        scored.push({ feed: f, ...stats, enclosures });
+      }
       if (n % 10 === 0) process.stdout.write(c.dim(`  scored ${n}/${feeds.size} feeds…\n`));
     } catch (e) {
       console.error(`  ${c.amber('!')} getEpisodes ${f.id} (${f.title}): ${e.message}`);
@@ -154,6 +158,7 @@ async function cmdRank(args) {
       show: s.feed.title,
       author: s.feed.author,
       link: showLink(s.feed),
+      host: detectFromUrls(s.enclosures || []),
       frequency_score: s.frequency_score,
       matching_eps: s.matching_eps,
       total_eps: s.total_eps,

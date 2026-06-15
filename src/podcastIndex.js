@@ -41,9 +41,9 @@ export async function searchFeeds(term) {
   }));
 }
 
-/** Fetch a feed's episodes. Returns [{ title, description, datePublished }]. */
-export async function getEpisodes(feedId) {
-  const url = `${BASE}/episodes/byfeedid?id=${encodeURIComponent(feedId)}&max=${LIMITS.maxEpisodesPerFeed}`;
+/** Fetch a feed's episodes. Returns [{ title, description, datePublished, enclosureUrl }]. */
+export async function getEpisodes(feedId, max = LIMITS.maxEpisodesPerFeed) {
+  const url = `${BASE}/episodes/byfeedid?id=${encodeURIComponent(feedId)}&max=${max}`;
   const data = await fetchJSON(url, {
     headers: piAuthHeaders(),
     retries: LIMITS.maxRetries,
@@ -53,5 +53,17 @@ export async function getEpisodes(feedId) {
     title: e.title || '',
     description: e.description || '',
     datePublished: e.datePublished || 0, // unix seconds
+    enclosureUrl: e.enclosureUrl || '', // audio file URL (reveals host/ad server)
   }));
+}
+
+/** Fetch a few recent episodes for a show by its iTunes id (for host detection). */
+export async function getEpisodesByItunesId(itunesId, max = 3) {
+  const url = `${BASE}/episodes/byitunesid?id=${encodeURIComponent(itunesId)}&max=${max}`;
+  const data = await fetchJSON(url, {
+    headers: piAuthHeaders(),
+    retries: LIMITS.maxRetries,
+    label: `getEpisodesByItunesId ${itunesId}`,
+  });
+  return (data.items || []).map((e) => ({ title: e.title || '', enclosureUrl: e.enclosureUrl || '' }));
 }

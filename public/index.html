@@ -139,7 +139,17 @@
           <p>A single weighted score, leaning toward relevance, so you can sort by
              one number while still seeing both dimensions in the table.</p>
           <p class="method-formula">blended = 0.6 × normalized&nbsp;relevance + 0.4 × (audience ÷ 100)</p>
-          <p class="method-src">Default sort: relevance when topics are selected; popularity for the overall board.</p>
+          <p class="method-src">Default sort: relevance when topics are selected; popularity for the overall board. Refined results show <b>big shows only</b> — those present in the Technology/Business charts.</p>
+        </div>
+
+        <div class="method-card">
+          <div class="method-num">📡</div>
+          <h3>Ad host / DAI <span class="tag">ad tech</span></h3>
+          <p>Which platform hosts &amp; serves ads for each show. We fingerprint the
+             episode audio (enclosure) URL: the host's domain plus any analytics
+             prefixes chained in front.</p>
+          <p class="method-formula">megaphone.fm → Megaphone · art19.com → Art19 · simplecast → AdsWizz · omny.fm → iHeart · podtrac/chartable → analytics</p>
+          <p class="method-src">Source: enclosure URLs from <a href="https://podcastindex.org" target="_blank" rel="noopener">Podcast Index</a>. Identifies the <em>platform</em> (host/DAI + analytics), not the advertiser/DSP; self-hosted shows read as "self-hosted".</p>
         </div>
       </div>
 

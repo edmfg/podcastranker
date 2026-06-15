@@ -27,15 +27,16 @@ const COLUMNS = {
     { h: '#', cls: 'rank-cell', val: (r, i) => i + 1 },
     { h: 'Show', cls: 'show-cell', html: showCell },
     { h: 'Genre', val: (r) => r.genre || '—' },
+    { h: 'Ad host', cls: 'hostcol', html: hostCell },
     { h: 'Popularity', cls: 'num', sort: 'audience_score', val: (r) => r.audience_score },
     { h: 'Chart rank', cls: 'num', sort: 'audience_rank', val: (r) => r.audience_rank ?? '—' },
   ],
   refined: () => [
     { h: '#', cls: 'rank-cell', val: (r, i) => i + 1 },
     { h: 'Show', cls: 'show-cell', html: showCell },
+    { h: 'Ad host', cls: 'hostcol', html: hostCell },
     { h: 'Relevance', cls: 'num', sort: 'frequency_score', val: (r) => r.frequency_score },
     { h: 'Matching eps', cls: 'num', sort: 'matching_eps', val: (r) => r.matching_eps },
-    { h: 'Last match', val: (r) => r.last_match_date || '—' },
     { h: state.audienceLabel, cls: 'num', sort: 'audience_score', html: audienceCell },
     { h: 'Blended', cls: 'num', sort: 'blended', val: (r) => r.blended },
   ],
@@ -83,6 +84,7 @@ async function loadGeneral() {
     $('#board-context').textContent = 'Showing the most popular Business & Technology podcasts. Select AI topics below to re-rank by how much each show covers them.';
     sortBoard(state.sortKey, true);
     status.hidden = true; wrap.hidden = false;
+    enrichHosts();
   } catch (e) {
     showBoardError(e.message);
   }
@@ -100,7 +102,7 @@ async function runRank(keywords) {
   const wrap = $('#table-wrap');
   status.hidden = false; status.classList.remove('error');
   status.innerHTML = `<span class="spinner"></span> Re-ranking by ${keywords.length} topic(s)… this can take 20–40s (scanning episodes).`;
-  $('#board-context').textContent = `Ranking by: ${keywords.join(', ')}`;
+  $('#board-context').textContent = `Big shows only · ranking by: ${keywords.join(', ')}`;
   document.getElementById('leaderboard').scrollIntoView({ behavior: 'smooth' });
 
   try {
@@ -112,7 +114,7 @@ async function runRank(keywords) {
     if (!data.results?.length) {
       wrap.hidden = true;
       status.hidden = false;
-      status.innerHTML = `No shows matched those topics in episode metadata. Try broader or different topics, or <a href="#" id="back-link">go back to the overall top</a>.`;
+      status.innerHTML = `No big (charting) podcasts matched those topics in episode metadata. Try broader topics, or <a href="#" id="back-link">go back to the top shows</a>.`;
       $('#back-link')?.addEventListener('click', (ev) => { ev.preventDefault(); state.selected.clear(); renderTray(); renderTerms(); loadGeneral(); });
       return;
     }
@@ -173,6 +175,29 @@ function audienceCell(r) {
   return r.audience_available
     ? escapeHtml(r.audience_score)
     : `<span class="below" title="${escapeAttr(r.audience_note || '')}">${escapeHtml(r.audience_note || '—')}</span>`;
+}
+function hostCell(r) {
+  if (r.host === undefined) return r.itunesId ? '<span class="host-loading">…</span>' : '<span class="host-unknown">—</span>';
+  const h = r.host || {};
+  const main = h.server ? `<span class="host-badge" title="Hosting / ad-insertion platform">${escapeHtml(h.server)}</span>` : '';
+  const pre = (h.prefixes || []).map((p) => `<span class="host-prefix" title="Analytics / attribution">${escapeHtml(p)}</span>`).join('');
+  return main + pre || '<span class="host-unknown" title="Self-hosted or unrecognized">—</span>';
+}
+
+// Lazily detect ad host/DAI for rows that don't already carry it (landing rows).
+async function enrichHosts() {
+  const pending = state.board.filter((r) => r.host === undefined && r.itunesId);
+  if (!pending.length) return;
+  await Promise.all(pending.map(async (r) => {
+    try {
+      const res = await fetch(`/api/host?itunesId=${encodeURIComponent(r.itunesId)}`);
+      const d = await res.json();
+      r.host = d.host || { server: null, prefixes: [] };
+    } catch {
+      r.host = { server: null, prefixes: [] };
+    }
+  }));
+  renderBoard();
 }
 
 // ================= TERM EXPLORER =================
