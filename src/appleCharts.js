@@ -1,39 +1,59 @@
 // ---------------------------------------------------------------------------
-// Apple Podcasts "Top Shows" chart — KEYLESS audience proxy.
-// Apple's public marketing-tools RSS feed lists the current top podcasts by
-// storefront. A show's presence + position in the chart is a free, no-signup
-// audience signal. Shows not in the chart return null (below threshold), the
-// same way Listen Notes returns null below its top-~10% line.
+// Apple Podcasts genre charts — KEYLESS audience proxy, focused on the
+// business/AI space. We pull Apple's "Top Podcasts" for the Technology and
+// Business genres (where AI-in-business shows actually live) and merge them,
+// keeping each show's best chart position. A show's presence + position is a
+// free, no-signup popularity signal. Shows outside both charts return null.
 //
-// Honest limit: this is the OVERALL top chart, so it favors big general shows.
-// It is a popularity proxy, not a download/listener count. Niche-but-on-topic
-// AI shows will often be "not in chart" — that's expected, not a bug.
+// Honest limit: these are popularity charts, not download/listener counts. The
+// genre charts favor larger shows; a niche on-topic show may be "not in chart".
 // ---------------------------------------------------------------------------
 import { fetchJSON } from './util.js';
 
 const STOREFRONT = 'us';
+const DEPTH = 100; // per-genre chart depth (Apple serves up to 100) + scoring base
+const GENRES = [
+  { id: 1318, name: 'Technology' },
+  { id: 1321, name: 'Business' },
+];
 
 function norm(s = '') {
   return s.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
 }
 
-/** Fetch the top-N chart once and index it by normalized show name. */
-export async function loadAppleChart(limit = 100) {
-  // Apple's marketing-tools feed only serves limits up to 100.
-  const n = Math.max(10, Math.min(100, Number(limit) || 100));
-  const url = `https://rss.marketingtools.apple.com/api/v2/${STOREFRONT}/podcasts/top/${n}/podcasts.json`;
-  const data = await fetchJSON(url, { retries: 3, label: 'apple top chart' });
-  const results = data?.feed?.results || [];
+async function loadGenre(id) {
+  const url = `https://itunes.apple.com/${STOREFRONT}/rss/toppodcasts/limit=${DEPTH}/genre=${id}/json`;
+  const data = await fetchJSON(url, { retries: 3, label: `apple genre ${id}` });
+  let entries = data?.feed?.entry || [];
+  if (!Array.isArray(entries)) entries = [entries];
+  return entries.map((e, i) => ({
+    rank: i + 1,
+    name: e?.['im:name']?.label || '',
+    artist: e?.['im:artist']?.label || '',
+    id: Number(e?.id?.attributes?.['im:id']) || null,
+  }));
+}
+
+/** Fetch Technology + Business charts once and index by normalized show name. */
+export async function loadAppleChart() {
+  const lists = await Promise.all(GENRES.map((g) => loadGenre(g.id).catch(() => [])));
   const map = new Map();
-  results.forEach((e, i) => {
-    map.set(norm(e.name), { rank: i + 1, id: Number(e.id) || null, name: e.name, artist: e.artistName });
+  lists.forEach((list, gi) => {
+    for (const e of list) {
+      const key = norm(e.name);
+      if (!key) continue;
+      const existing = map.get(key);
+      if (!existing || e.rank < existing.rank) {
+        map.set(key, { rank: e.rank, id: e.id, name: e.name, artist: e.artist, genre: GENRES[gi].name });
+      }
+    }
   });
-  return { map, size: results.length };
+  return { map, size: DEPTH };
 }
 
 /**
  * Look up a show in a loaded chart. Returns { score, rank, itunes_id }.
- * score is 0–100 derived from chart position (rank 1 ≈ 100); null if not found.
+ * score is 0–100 from chart position (rank 1 ≈ 100); null if not found.
  */
 export function lookupAppleChart(showTitle, chart) {
   const key = norm(showTitle);

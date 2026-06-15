@@ -46,10 +46,11 @@
     <!-- =========================== LEADERBOARD ========================= -->
     <section id="leaderboard" class="section">
       <div class="section-head">
-        <h2 id="board-title">Top podcasts right now</h2>
-        <p id="board-sub">The most popular shows overall. Select AI topics below to
-           re-rank the board by how much each show actually discusses them —
-           combining <em>topic relevance</em> with <em>audience size</em>.</p>
+        <h2 id="board-title">Top business &amp; tech podcasts right now</h2>
+        <p id="board-sub">The most popular shows in the Business &amp; Technology
+           charts — the AI-in-business neighborhood. Select AI topics below to
+           re-rank by how much each show actually discusses them, combining
+           <em>topic relevance</em> with <em>audience size</em>.</p>
       </div>
 
       <div class="board-controls">
@@ -124,11 +125,12 @@
         <div class="method-card">
           <div class="method-num">2</div>
           <h3>Audience size <span class="tag">popularity</span></h3>
-          <p>How <em>big</em> a show is. The default board uses each show's position
-             in Apple's current Top Podcasts chart (0–100, keyless). Optionally,
-             Listen Notes' Listen Score can be used instead.</p>
-          <p class="method-formula">audience = Apple&nbsp;chart&nbsp;rank → 0–100 &nbsp;(or Listen&nbsp;Score, if configured)</p>
-          <p class="method-src">Sources: <a href="https://podcasts.apple.com" target="_blank" rel="noopener">Apple Top Podcasts</a> chart (default, no key) · <a href="https://www.listennotes.com" target="_blank" rel="noopener">Listen Notes</a> Listen Score (optional).</p>
+          <p>How <em>big</em> a show is. We use each show's position in Apple's
+             current <b>Technology &amp; Business</b> podcast charts (0–100, keyless)
+             — the AI-in-business space. Optionally, Listen Notes' Listen Score can
+             be used instead.</p>
+          <p class="method-formula">audience = Apple&nbsp;Technology/Business&nbsp;chart&nbsp;rank → 0–100 &nbsp;(or Listen&nbsp;Score, if configured)</p>
+          <p class="method-src">Sources: <a href="https://podcasts.apple.com" target="_blank" rel="noopener">Apple Top Podcasts</a> — Technology &amp; Business genre charts (default, no key) · <a href="https://www.listennotes.com" target="_blank" rel="noopener">Listen Notes</a> Listen Score (optional).</p>
         </div>
 
         <div class="method-card">
@@ -145,7 +147,7 @@
         <h4>Honest limits</h4>
         <ul>
           <li><b>No real download numbers.</b> True listener/download counts are private; no free API exposes them. The audience column is a <em>modeled popularity proxy</em>, not a download count.</li>
-          <li><b>Apple's chart is the overall top chart</b>, so it favors large general shows. A niche-but-on-topic show may rank high on relevance yet show "not in Apple Top chart" for audience — that's expected.</li>
+          <li><b>Apple's genre charts favor larger shows.</b> A niche-but-on-topic show may rank high on relevance yet show "not in Apple Top chart" for audience — that's expected.</li>
           <li><b>Metadata, not transcripts.</b> Relevance is measured from episode titles &amp; descriptions, so a show that discusses a topic without naming it may be undercounted.</li>
         </ul>
       </div>

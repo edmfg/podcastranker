@@ -26,8 +26,9 @@ const COLUMNS = {
   general: () => [
     { h: '#', cls: 'rank-cell', val: (r, i) => i + 1 },
     { h: 'Show', cls: 'show-cell', html: showCell },
+    { h: 'Genre', val: (r) => r.genre || '—' },
     { h: 'Popularity', cls: 'num', sort: 'audience_score', val: (r) => r.audience_score },
-    { h: 'Apple chart rank', cls: 'num', sort: 'audience_rank', val: (r) => r.audience_rank ?? '—' },
+    { h: 'Chart rank', cls: 'num', sort: 'audience_rank', val: (r) => r.audience_rank ?? '—' },
   ],
   refined: () => [
     { h: '#', cls: 'rank-cell', val: (r, i) => i + 1 },
@@ -65,9 +66,9 @@ async function loadGeneral() {
   state.audienceLabel = 'Apple chart';
   state.sortKey = 'audience_score';
   state.sortDir = -1;
-  $('#board-title').textContent = 'Top podcasts right now';
+  $('#board-title').textContent = 'Top business & tech podcasts right now';
   $('#show-overall').hidden = true;
-  $('#board-context').textContent = 'Loading the most popular podcasts…';
+  $('#board-context').textContent = 'Loading the most popular Business & Technology podcasts…';
 
   const status = $('#board-status');
   const wrap = $('#table-wrap');
@@ -79,7 +80,7 @@ async function loadGeneral() {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
     state.board = data.results || [];
-    $('#board-context').textContent = 'Showing the 10 most popular podcasts overall. Select AI topics below to re-rank by relevance.';
+    $('#board-context').textContent = 'Showing the most popular Business & Technology podcasts. Select AI topics below to re-rank by how much each show covers them.';
     sortBoard(state.sortKey, true);
     status.hidden = true; wrap.hidden = false;
   } catch (e) {
