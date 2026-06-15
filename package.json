@@ -1,0 +1,19 @@
+{
+  "name": "podcastranker",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Find podcasts that talk about AI-in-business the most, ranked by topic frequency + audience size. Plus a searchable library of AI-in-business terms.",
+  "type": "module",
+  "bin": {
+    "podcastranker": "index.js"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "rank": "node index.js rank",
+    "terms": "node index.js terms"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT"
+}

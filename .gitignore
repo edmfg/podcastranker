@@ -1,0 +1,16 @@
+# secrets — NEVER commit
+.env
+.env.*
+!.env.example
+
+# node
+node_modules/
+npm-debug.log*
+
+# generated output
+results.json
+leaderboard.html
+.cache/
+
+# os
+.DS_Store
