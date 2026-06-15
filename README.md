@@ -45,6 +45,19 @@ node index.js rank --sort blended --html
 
 Requires **Node 18+** (uses built-in `fetch` and `crypto`).
 
+## Web app (Vercel)
+
+There's also a deployed website (`public/` + `api/`):
+- **Term explorer** — searchable, filterable AI-in-business term library, fully
+  client-side (`public/` static, data from `public/terms.json`).
+- **Leaderboard** — live ranking via the serverless `api/rank.js` (bounded so it
+  fits the function time limit), using `PI_KEY` / `PI_SECRET` (and optional
+  `LISTEN_API_KEY`) set as Vercel environment variables.
+
+`vercel.json` serves `public/` as the static root, runs `scripts/build-terms.mjs`
+at build time to regenerate `public/terms.json` from `src/terms.js`, and gives
+`api/rank.js` a 60s budget. Deploys on push to `main`.
+
 ## Commands
 
 ```

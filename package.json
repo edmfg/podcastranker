@@ -10,7 +10,8 @@
   "scripts": {
     "start": "node index.js",
     "rank": "node index.js rank",
-    "terms": "node index.js terms"
+    "terms": "node index.js terms",
+    "build:terms": "node scripts/build-terms.mjs"
   },
   "engines": {
     "node": ">=18"

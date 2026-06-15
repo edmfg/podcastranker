@@ -1,0 +1,9 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "node scripts/build-terms.mjs",
+  "outputDirectory": "public",
+  "framework": null,
+  "functions": {
+    "api/rank.js": { "maxDuration": 60 }
+  }
+}

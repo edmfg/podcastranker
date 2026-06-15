@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Podcast Ranker — AI in Business</title>
+  <meta name="description" content="Find the podcasts that talk about AI in business the most — ranked by topic frequency and audience. Plus a searchable library of AI-in-business terms." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎙️</text></svg>" />
+</head>
+<body>
+  <header class="hero">
+    <nav class="nav">
+      <div class="brand"><span class="brand-mark">🎙️</span> Podcast<span class="brand-accent">Ranker</span></div>
+      <div class="nav-links">
+        <a href="#explore">Explore terms</a>
+        <a href="#leaderboard">Leaderboard</a>
+        <a href="https://github.com/edmfg/podcastranker" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </nav>
+
+    <div class="hero-inner">
+      <p class="eyebrow">AI · in · business</p>
+      <h1>Which podcasts talk about <span class="grad">AI in business</span> the most?</h1>
+      <p class="lede">
+        Ranked on two dimensions — how <em>often</em> a show covers AI-in-business
+        (topic frequency) and how <em>big</em> it is (audience proxy). Start by
+        exploring the vocabulary people use, then build a leaderboard from it.
+      </p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="#explore">Explore the term library</a>
+        <a class="btn btn-ghost" href="#leaderboard">Jump to leaderboard</a>
+      </div>
+      <div class="hero-stats">
+        <div><b id="stat-terms">—</b><span>AI-in-business terms</span></div>
+        <div><b id="stat-cats">—</b><span>categories</span></div>
+        <div><b>2</b><span>ranking dimensions</span></div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- ============================ EXPLORE ============================ -->
+    <section id="explore" class="section">
+      <div class="section-head">
+        <h2>Explore AI-in-business terms</h2>
+        <p>Search the popular phrases and vocabulary used when discussing how AI
+           affects business. Tap terms to add them to your search, then build a
+           leaderboard from exactly the topics you care about.</p>
+      </div>
+
+      <div class="search-bar">
+        <svg class="search-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        <input id="term-search" type="search" placeholder="Search terms — e.g. agents, ROI, governance, marketing…" autocomplete="off" />
+        <button id="clear-search" class="clear-btn" title="Clear" hidden>×</button>
+      </div>
+
+      <div id="category-filters" class="chips"></div>
+
+      <div class="tray" id="tray" hidden>
+        <div class="tray-label">Selected (<span id="tray-count">0</span>):</div>
+        <div id="tray-items" class="tray-items"></div>
+        <button id="run-selected" class="btn btn-primary btn-sm">Find podcasts with these terms →</button>
+        <button id="clear-tray" class="btn btn-ghost btn-sm">Clear</button>
+      </div>
+
+      <div id="term-results" class="term-groups"></div>
+      <p id="term-empty" class="empty" hidden>No terms match. Try a broader word.</p>
+    </section>
+
+    <!-- =========================== LEADERBOARD ========================= -->
+    <section id="leaderboard" class="section section-alt">
+      <div class="section-head">
+        <h2>Podcast leaderboard</h2>
+        <p>Live-ranked from Podcast Index (topic frequency) × a popularity proxy
+           (audience). Run it on the default AI-in-business keywords, or use the
+           terms you selected above.</p>
+      </div>
+
+      <div class="board-controls">
+        <button id="run-default" class="btn btn-primary">Rank default AI-in-business keywords</button>
+        <span id="board-context" class="board-context"></span>
+      </div>
+
+      <div id="board-status" class="board-status" hidden></div>
+
+      <div class="table-wrap" id="table-wrap" hidden>
+        <table class="board">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Show</th>
+              <th class="num" data-sort="frequency_score">Freq ▾</th>
+              <th class="num" data-sort="matching_eps">Eps</th>
+              <th>Last match</th>
+              <th class="num" data-sort="audience_score" id="aud-col">Audience</th>
+              <th class="num" data-sort="blended">Blended</th>
+            </tr>
+          </thead>
+          <tbody id="board-body"></tbody>
+        </table>
+      </div>
+
+      <p class="disclaimer">
+        ⚠️ <b>Honest limit:</b> true download counts are private — no free API exposes them.
+        The audience column is a <em>modeled popularity proxy</em> (0–100), not a listener count.
+        Shows below the proxy's visibility threshold are flagged, not scored.
+      </p>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>Podcast<b>Ranker</b> · topic frequency via <a href="https://podcastindex.org" target="_blank" rel="noopener">Podcast Index</a> · audience via Apple Top Charts / Listen Notes</p>
+    <p class="muted">A free, local-first tool. Built for exploring AI-in-business podcast coverage.</p>
+  </footer>
+
+  <script src="/app.js"></script>
+</body>
+</html>
