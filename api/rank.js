@@ -31,10 +31,20 @@ export default async function handler(req, res) {
     keywords = keywords.slice(0, MAX_KEYWORDS);
     const limit = Math.min(25, Math.max(5, Number(url.searchParams.get('limit')) || 15));
 
+    const debug = url.searchParams.get('debug') === '1';
+
     // 1. candidate feeds per keyword (parallel), dedupe by feedId
-    const found = await Promise.all(keywords.map((t) => searchFeeds(t).catch(() => [])));
+    const outcomes = await Promise.all(
+      keywords.map((t) => searchFeeds(t).then((list) => ({ list })).catch((e) => ({ err: String(e?.message || e) })))
+    );
+    const searchErrors = outcomes.filter((o) => o.err).map((o) => o.err);
+    const lists = outcomes.filter((o) => o.list).map((o) => o.list);
+    // If every search failed, it's almost always an auth/credentials problem.
+    if (!lists.length && searchErrors.length) {
+      return res.status(502).json({ error: `Podcast Index request failed: ${searchErrors[0]}` });
+    }
     const feeds = new Map();
-    found.forEach((list) => {
+    lists.forEach((list) => {
       for (const f of list.slice(0, FEEDS_PER_KEYWORD)) {
         if (feeds.size < MAX_FEEDS && !feeds.has(f.id)) feeds.set(f.id, f);
       }
@@ -86,6 +96,7 @@ export default async function handler(req, res) {
       audienceLabel: provider.label,
       count: rows.length,
       results: rows,
+      ...(debug ? { debug: { feedsFound: feeds.size, feedsMatched: scored.length, searchErrors } } : {}),
     });
   } catch (e) {
     res.status(500).json({ error: String(e?.message || e) });
