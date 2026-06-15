@@ -20,11 +20,13 @@ export const WEIGHTS = {
 // Pipeline limits — respect free quotas.
 export const LIMITS = {
   maxEpisodesPerFeed: 1000, // Podcast Index cap per feed fetch
-  shortlistSize: 40, // top-N by frequency to enrich with Listen Notes
+  shortlistSize: 40, // top-N by frequency to enrich with audience data
   resultSize: 25, // final leaderboard length
   requestDelayMs: 250, // polite gap between API calls
   maxRetries: 4, // retry-with-backoff on errors / 429s
+  appleChartSize: 100, // top shows for the keyless Apple proxy (Apple feed max is 100)
 };
 
-// A null Listen Score means "below the top ~10% threshold", not zero audience.
-export const BELOW_THRESHOLD_LABEL = 'below top-10%';
+// A null audience score means "below this proxy's visibility threshold", not
+// zero audience. The exact wording is provided per-provider (see src/audience.js).
+export const BELOW_THRESHOLD_LABEL = 'below threshold';

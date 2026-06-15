@@ -15,11 +15,10 @@
 // ---------------------------------------------------------------------------
 import { writeFileSync } from 'node:fs';
 import { loadEnv, sleep } from './src/util.js';
-import { KEYWORDS, LIMITS, WEIGHTS, BELOW_THRESHOLD_LABEL } from './src/config.js';
+import { KEYWORDS, LIMITS, WEIGHTS } from './src/config.js';
 import { searchTerms, groupByCategory, CATEGORIES, TERMS } from './src/terms.js';
 import { searchFeeds, getEpisodes } from './src/podcastIndex.js';
-import { getAudience } from './src/listenNotes.js';
-import { getAppleRatings } from './src/apple.js';
+import { selectAudienceProvider } from './src/audience.js';
 import { frequencyScore, audienceScore, attachBlended } from './src/score.js';
 
 // ---- tiny arg parser -------------------------------------------------------
@@ -84,12 +83,14 @@ function cmdTerms(args) {
 // ===========================================================================
 async function cmdRank(args) {
   loadEnv();
-  const missing = ['PI_KEY', 'PI_SECRET', 'LISTEN_API_KEY'].filter((k) => !process.env[k]);
+  // Only Podcast Index is required. Audience is provided keylessly via the Apple
+  // Top Chart unless a LISTEN_API_KEY is present (then Listen Notes is used).
+  const missing = ['PI_KEY', 'PI_SECRET'].filter((k) => !process.env[k]);
   if (missing.length) {
     console.error(`\n${c.amber('Missing credentials:')} ${missing.join(', ')}`);
-    console.error('Copy .env.example to .env and add your free keys:');
+    console.error('Copy .env.example to .env and add your free Podcast Index key:');
     console.error('  Podcast Index  https://api.podcastindex.org/signup');
-    console.error('  Listen Notes   https://www.listennotes.com/api/\n');
+    console.error('(Listen Notes is optional — without it, a keyless Apple chart proxy is used.)\n');
     process.exitCode = 1;
     return;
   }
@@ -99,10 +100,10 @@ async function cmdRank(args) {
     : KEYWORDS;
   const sort = args.flags.sort || 'freq';
   const limit = Number(args.flags.limit) || LIMITS.resultSize;
-  const useApple = args.flags.apple !== false && !args.flags['no-apple'];
+  const provider = selectAudienceProvider({ disabled: !!args.flags['no-audience'] });
 
   console.log(`\n${c.b('Ranking podcasts on AI-in-business coverage')}`);
-  console.log(c.dim(`${keywords.length} keywords · sort=${sort} · top ${limit}\n`));
+  console.log(c.dim(`${keywords.length} keywords · audience=${provider.name} · sort=${sort} · top ${limit}\n`));
 
   // --- 1. candidate feeds per keyword (dedupe by feedId) -------------------
   const feeds = new Map();
@@ -138,19 +139,16 @@ async function cmdRank(args) {
 
   // --- 3. enrich shortlist with audience (respect free quota) --------------
   const shortlist = scored.slice(0, LIMITS.shortlistSize);
-  console.log(`\n${c.dim(`Enriching top ${shortlist.length} with Listen Notes audience data…`)}`);
+  const chartSize = await provider.prepare();
+  if (provider.name === 'apple-chart') console.log(c.dim(`\nLoaded Apple Top ${chartSize} chart (keyless audience proxy).`));
+  console.log(`${c.dim(`Enriching top ${shortlist.length} shows with ${provider.label} data…`)}`);
   const rows = [];
   for (const s of shortlist) {
-    let listen_score = null, global_rank = null, itunes_id = null;
+    let score = null, rank = null;
     try {
-      const aud = await getAudience(s.feed.title);
-      ({ listen_score, global_rank, itunes_id } = aud);
+      ({ score, rank } = await provider.lookup(s.feed.title));
     } catch (e) {
-      console.error(`  ${c.amber('!')} getAudience "${s.feed.title}": ${e.message}`);
-    }
-    let apple_proxy = null;
-    if (listen_score == null && useApple) {
-      apple_proxy = await getAppleRatings(itunes_id);
+      console.error(`  ${c.amber('!')} audience "${s.feed.title}": ${e.message}`);
     }
     rows.push({
       show: s.feed.title,
@@ -159,12 +157,13 @@ async function cmdRank(args) {
       matching_eps: s.matching_eps,
       total_eps: s.total_eps,
       last_match_date: s.last_match_date,
-      listen_score,
-      global_rank,
-      audience_score: audienceScore({ listen_score, apple_proxy }),
-      audience_note: listen_score == null ? BELOW_THRESHOLD_LABEL : null,
+      audience_source: provider.name,
+      audience_score: audienceScore(score),
+      audience_rank: rank,
+      audience_available: score != null,
+      audience_note: score == null ? provider.thresholdNote : null,
     });
-    await sleep(LIMITS.requestDelayMs);
+    if (provider.networked) await sleep(LIMITS.requestDelayMs);
   }
 
   // --- 4. blend, sort, trim ------------------------------------------------
@@ -174,12 +173,14 @@ async function cmdRank(args) {
   const top = rows.slice(0, limit);
 
   // --- 5. output -----------------------------------------------------------
-  printTable(top);
+  printTable(top, provider);
 
   const payload = {
     generatedAt: new Date().toISOString(),
     keywords,
     weights: WEIGHTS,
+    audienceProvider: provider.name,
+    audienceLabel: provider.label,
     sortedBy: sortKey,
     count: top.length,
     results: top,
@@ -192,15 +193,18 @@ async function cmdRank(args) {
     writeFileSync('leaderboard.html', renderLeaderboard(top, payload));
     console.log(c.dim('Wrote leaderboard.html'));
   }
-  console.log(
-    `\n${c.amber('Note:')} Listen Score is a modeled popularity proxy (0–100), not a download count. ` +
-    `Shows marked "${BELOW_THRESHOLD_LABEL}" sit below its ~top-10% threshold.\n`
-  );
+  if (provider.name !== 'none') {
+    console.log(
+      `\n${c.amber('Note:')} ${provider.label} is a popularity proxy (0–100), not a download count. ` +
+      `Shows marked "${provider.thresholdNote}" sit below this proxy's visibility threshold.\n`
+    );
+  }
 }
 
-function printTable(rows) {
+function printTable(rows, provider) {
   console.log('');
-  const header = ['#', 'show', 'freq', 'eps', 'last match', 'listen', 'rank', 'blend'];
+  const audLabel = (provider.label || 'audience').slice(0, 7);
+  const header = ['#', 'show', 'freq', 'eps', 'last match', audLabel, 'rank', 'blend'];
   const widths = [3, 38, 6, 4, 11, 7, 6, 5];
   const fmt = (cells) => cells.map((v, i) => String(v).slice(0, widths[i]).padEnd(widths[i])).join('  ');
   console.log(c.b(fmt(header)));
@@ -213,8 +217,8 @@ function printTable(rows) {
         r.frequency_score,
         r.matching_eps,
         r.last_match_date || '—',
-        r.listen_score == null ? '—' : r.listen_score,
-        r.global_rank ?? '—',
+        r.audience_available ? r.audience_score : '—',
+        r.audience_rank ?? '—',
         r.blended,
       ])
     );
@@ -242,7 +246,11 @@ ${c.b('rank options')}
   --sort freq|audience|blended   default: freq
   --limit N            leaderboard size (default ${LIMITS.resultSize})
   --html               also emit leaderboard.html (sortable)
-  --no-apple           skip the fragile Apple ratings fallback
+  --no-audience        frequency-only (skip audience proxy entirely)
+
+${c.b('audience source')} (auto-selected)
+  Listen Notes if LISTEN_API_KEY is set in .env, otherwise a keyless
+  Apple Top Chart proxy. Only Podcast Index credentials are required.
 `);
 }
 

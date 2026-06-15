@@ -44,11 +44,9 @@ export function frequencyScore(episodes, keywords) {
   };
 }
 
-/** audience_score: listen_score ?? apple_proxy ?? 0 (kept on its own column). */
-export function audienceScore({ listen_score, apple_proxy }) {
-  if (typeof listen_score === 'number') return listen_score;
-  if (typeof apple_proxy === 'number') return apple_proxy;
-  return 0;
+/** audience_score: the provider's 0–100 score, or 0 when below its threshold. */
+export function audienceScore(score) {
+  return typeof score === 'number' ? score : 0;
 }
 
 /**

@@ -1,7 +1,8 @@
 // ---------------------------------------------------------------------------
-// Listen Notes API client — audience proxy.
+// Listen Notes API client — OPTIONAL audience proxy (needs LISTEN_API_KEY).
 // Auth: single header  X-ListenAPI-Key.  Free quota is small — only enrich the
-// shortlist (see brief §2 guardrails).
+// shortlist (see brief §2 guardrails). If you don't have a key, the ranker
+// falls back to the keyless Apple chart proxy (see src/appleCharts.js).
 // ---------------------------------------------------------------------------
 import { fetchJSON } from './util.js';
 import { LIMITS } from './config.js';
@@ -21,23 +22,20 @@ function norm(s = '') {
 
 /**
  * Look up a show by title; return audience signals for the best match.
- * { listen_score, global_rank, itunes_id, matched_title } — fields are null if
- * unavailable (listen_score is null for shows below the top ~10%).
+ * { score, rank, itunes_id } — score is the Listen Score (0–100) or null when
+ * the show sits below Listen Notes' top-~10% threshold.
  */
-export async function getAudience(showTitle) {
+export async function getListenNotesAudience(showTitle) {
   const url = `${BASE}/search?q=${encodeURIComponent(showTitle)}&type=podcast&only_in=title&page_size=5`;
   const data = await fetchJSON(url, {
     headers: lnHeaders(),
     retries: LIMITS.maxRetries,
-    label: `getAudience "${showTitle}"`,
+    label: `listennotes "${showTitle}"`,
   });
 
   const results = data.results || [];
-  if (results.length === 0) {
-    return { listen_score: null, global_rank: null, itunes_id: null, matched_title: null };
-  }
+  if (results.length === 0) return { score: null, rank: null, itunes_id: null };
 
-  // Prefer an exact-ish title match, else take the top result.
   const target = norm(showTitle);
   const best =
     results.find((r) => norm(r.title_original) === target) ||
@@ -46,9 +44,8 @@ export async function getAudience(showTitle) {
 
   const ls = best.listen_score;
   return {
-    listen_score: typeof ls === 'number' && ls > 0 ? ls : null,
-    global_rank: best.listennotes_url ? best.global_rank ?? null : best.global_rank ?? null,
+    score: typeof ls === 'number' && ls > 0 ? ls : null,
+    rank: best.global_rank ?? null,
     itunes_id: best.itunes_id ?? null,
-    matched_title: best.title_original || null,
   };
 }
