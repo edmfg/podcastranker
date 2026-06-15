@@ -57,7 +57,7 @@ export async function getEpisodes(feedId, max = LIMITS.maxEpisodesPerFeed) {
   }));
 }
 
-/** Fetch a few recent episodes for a show by its iTunes id (for host detection). */
+/** Fetch recent episodes for a show by its iTunes id (relevance + host detection). */
 export async function getEpisodesByItunesId(itunesId, max = 3) {
   const url = `${BASE}/episodes/byitunesid?id=${encodeURIComponent(itunesId)}&max=${max}`;
   const data = await fetchJSON(url, {
@@ -65,5 +65,10 @@ export async function getEpisodesByItunesId(itunesId, max = 3) {
     retries: LIMITS.maxRetries,
     label: `getEpisodesByItunesId ${itunesId}`,
   });
-  return (data.items || []).map((e) => ({ title: e.title || '', enclosureUrl: e.enclosureUrl || '' }));
+  return (data.items || []).map((e) => ({
+    title: e.title || '',
+    description: e.description || '',
+    datePublished: e.datePublished || 0,
+    enclosureUrl: e.enclosureUrl || '',
+  }));
 }
