@@ -176,11 +176,19 @@ function audienceCell(r) {
     ? escapeHtml(r.audience_score)
     : `<span class="below" title="${escapeAttr(r.audience_note || '')}">${escapeHtml(r.audience_note || '—')}</span>`;
 }
+function hostBadge(item, cls, title) {
+  if (!item || !item.name) return '';
+  const label = escapeHtml(item.name);
+  if (item.url) {
+    return `<a class="${cls} linked" href="${escapeAttr(item.url)}" target="_blank" rel="noopener" title="${title}">${label} <span class="ext">↗</span></a>`;
+  }
+  return `<span class="${cls}" title="${title}">${label}</span>`;
+}
 function hostCell(r) {
   if (r.host === undefined) return r.itunesId ? '<span class="host-loading">…</span>' : '<span class="host-unknown">—</span>';
   const h = r.host || {};
-  const main = h.server ? `<span class="host-badge" title="Hosting / ad-insertion platform">${escapeHtml(h.server)}</span>` : '';
-  const pre = (h.prefixes || []).map((p) => `<span class="host-prefix" title="Analytics / attribution">${escapeHtml(p)}</span>`).join('');
+  const main = hostBadge(h.server, 'host-badge', 'Hosting / ad-insertion platform — visit site');
+  const pre = (h.prefixes || []).map((p) => hostBadge(p, 'host-prefix', 'Analytics / attribution — visit site')).join('');
   return main + pre || '<span class="host-unknown" title="Self-hosted or unrecognized">—</span>';
 }
 

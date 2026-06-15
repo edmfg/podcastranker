@@ -190,8 +190,12 @@ em { font-style: normal; color: var(--accent-ink); font-weight: 600; }
 
 /* host / DAI badges (neutral class names — avoid ad-blocker cosmetic filters) */
 .hostcol { max-width: 220px; }
-.host-badge { display: inline-block; background: #eef2ff; color: #3730a3; border: 1px solid #e0e7ff; padding: .15rem .5rem; border-radius: 999px; font-size: .76rem; font-weight: 600; white-space: nowrap; }
-.host-prefix { display: inline-block; background: #f6f6fb; color: var(--ink-soft); border: 1px solid var(--line); padding: .12rem .45rem; border-radius: 999px; font-size: .68rem; margin-left: .25rem; white-space: nowrap; }
+.host-badge { display: inline-block; background: #eef2ff; color: #3730a3; border: 1px solid #e0e7ff; padding: .15rem .5rem; border-radius: 999px; font-size: .76rem; font-weight: 600; white-space: nowrap; text-decoration: none; }
+.host-prefix { display: inline-block; background: #f6f6fb; color: var(--ink-soft); border: 1px solid var(--line); padding: .12rem .45rem; border-radius: 999px; font-size: .68rem; margin-left: .25rem; white-space: nowrap; text-decoration: none; }
+a.host-badge:hover { background: #e0e7ff; border-color: #c7d2fe; }
+a.host-prefix:hover { background: #eef0f8; border-color: #d7d9e6; color: var(--ink); }
+.host-badge .ext, .host-prefix .ext { opacity: .5; font-size: .85em; }
+a.host-badge:hover .ext, a.host-prefix:hover .ext { opacity: 1; }
 .host-unknown { color: #b9bad0; }
 .host-loading { color: #b9bad0; animation: pulse 1.2s ease-in-out infinite; }
 @keyframes pulse { 0%,100% { opacity: .4 } 50% { opacity: 1 } }
