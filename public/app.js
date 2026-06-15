@@ -25,20 +25,21 @@ const state = {
 const COLUMNS = {
   general: () => [
     { h: '#', cls: 'rank-cell', val: (r, i) => i + 1 },
-    { h: 'Show', cls: 'show-cell', html: showCell },
-    { h: 'Genre', val: (r) => r.genre || '—' },
-    { h: 'Ad host', cls: 'hostcol', html: hostCell },
-    { h: 'Popularity', cls: 'num', sort: 'audience_score', val: (r) => r.audience_score },
-    { h: 'Chart rank', cls: 'num', sort: 'audience_rank', val: (r) => r.audience_rank ?? '—' },
+    { h: 'Show', cls: 'show-cell', html: showCell, sort: 'show', type: 'text', sortVal: (r) => r.show },
+    { h: 'Genre', val: (r) => r.genre || '—', sort: 'genre', type: 'text', sortVal: (r) => r.genre || '' },
+    { h: 'Ad host', cls: 'hostcol', html: hostCell, sort: 'host', type: 'text', sortVal: hostSortVal },
+    { h: 'Popularity', cls: 'num', val: (r) => r.audience_score, sort: 'audience_score', type: 'num' },
+    { h: 'Chart rank', cls: 'num', val: (r) => r.audience_rank ?? '—', sort: 'audience_rank', type: 'num', sortVal: (r) => r.audience_rank ?? Infinity },
   ],
   refined: () => [
     { h: '#', cls: 'rank-cell', val: (r, i) => i + 1 },
-    { h: 'Show', cls: 'show-cell', html: showCell },
-    { h: 'Ad host', cls: 'hostcol', html: hostCell },
-    { h: 'Relevance', cls: 'num', sort: 'frequency_score', val: (r) => r.frequency_score },
-    { h: 'Matching eps', cls: 'num', sort: 'matching_eps', val: (r) => r.matching_eps },
-    { h: state.audienceLabel, cls: 'num', sort: 'audience_score', html: audienceCell },
-    { h: 'Blended', cls: 'num', sort: 'blended', val: (r) => r.blended },
+    { h: 'Show', cls: 'show-cell', html: showCell, sort: 'show', type: 'text', sortVal: (r) => r.show },
+    { h: 'Ad host', cls: 'hostcol', html: hostCell, sort: 'host', type: 'text', sortVal: hostSortVal },
+    { h: 'Relevance', cls: 'num', val: (r) => r.frequency_score, sort: 'frequency_score', type: 'num' },
+    { h: 'Matching eps', cls: 'num', val: (r) => r.matching_eps, sort: 'matching_eps', type: 'num' },
+    { h: 'Last match', val: (r) => r.last_match_date || '—', sort: 'last_match_date', type: 'text', sortVal: (r) => r.last_match_date || '' },
+    { h: state.audienceLabel, cls: 'num', html: audienceCell, sort: 'audience_score', type: 'num' },
+    { h: 'Blended', cls: 'num', val: (r) => r.blended, sort: 'blended', type: 'num' },
   ],
 };
 
@@ -82,7 +83,7 @@ async function loadGeneral() {
     if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
     state.board = data.results || [];
     $('#board-context').textContent = 'Showing the most popular Business & Technology podcasts. Select AI topics below to re-rank by how much each show covers them.';
-    sortBoard(state.sortKey, true);
+    setSort(state.sortKey, true);
     status.hidden = true; wrap.hidden = false;
     enrichHosts();
   } catch (e) {
@@ -119,7 +120,7 @@ async function runRank(keywords) {
       return;
     }
     state.board = data.results;
-    sortBoard(state.sortKey, true);
+    setSort(state.sortKey, true);
     status.hidden = true; wrap.hidden = false;
   } catch (e) {
     showBoardError(e.message, true);
@@ -136,13 +137,40 @@ function showBoardError(msg, refining) {
   status.innerHTML = `⚠️ ${escapeHtml(msg)}${hint}`;
 }
 
-function sortBoard(key, keepDir = false) {
+function hostSortVal(r) {
+  return (r.host && r.host.server && r.host.server.name) || '￿'; // unknown sorts last (asc)
+}
+function colByKey(key) {
+  return COLUMNS[state.mode]().find((c) => c.sort === key);
+}
+function applySort() {
+  const col = colByKey(state.sortKey);
+  if (!col) return;
+  const dir = state.sortDir;
+  const get = col.sortVal || col.val;
+  const type = col.type || 'num';
+  state.board.sort((a, b) => {
+    let av = get(a), bv = get(b);
+    if (type === 'text') {
+      av = String(av ?? '').toLowerCase();
+      bv = String(bv ?? '').toLowerCase();
+      return av < bv ? -dir : av > bv ? dir : 0;
+    }
+    av = Number(av); bv = Number(bv);
+    if (!isFinite(av)) av = -Infinity;
+    if (!isFinite(bv)) bv = -Infinity;
+    return (av - bv) * dir;
+  });
+}
+// Set the sort (default direction: text ascending, numbers descending) and render.
+function setSort(key, keepDir = false) {
+  const col = colByKey(key);
+  if (!col || !col.sort) return;
   if (!keepDir) {
     if (state.sortKey === key) state.sortDir *= -1;
-    else { state.sortKey = key; state.sortDir = -1; }
-  } else state.sortKey = key;
-  const dir = state.sortDir;
-  state.board.sort((a, b) => ((a[key] ?? -1) - (b[key] ?? -1)) * dir);
+    else { state.sortKey = key; state.sortDir = col.type === 'text' ? 1 : -1; }
+  }
+  applySort();
   renderBoard();
 }
 
@@ -161,7 +189,7 @@ function renderBoard() {
     }).join('')}</tr>`).join('');
 
   $$('#board-head th[data-sort]').forEach((th) =>
-    th.addEventListener('click', () => sortBoard(th.dataset.sort)));
+    th.addEventListener('click', () => setSort(th.dataset.sort)));
 }
 
 function showCell(r) {
